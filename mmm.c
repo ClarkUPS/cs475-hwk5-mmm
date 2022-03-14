@@ -1,9 +1,12 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <time.h>
 #include <string.h>
 #include <stdio.h>
 #include "mmm.h"
+
+
 
 /**
  * Allocate and initialize the matrices on the heap. Populate
@@ -11,15 +14,67 @@
  */
 void mmm_init()
 {
-	// TODO
+	
+
+	//Wish I could genaralize this block!
+	matrixOne = (double **) malloc(sizeof (double*) *matrixSize); 
+	int a;
+	for(a = 0; a < matrixSize; a++){
+		matrixOne[a] = (double *) malloc(sizeof (double) *matrixSize);
+	}
+	
+	int b;
+	for(a = 0; a < matrixSize; a++){
+		for(b = 0; b < matrixSize; b++){
+			matrixOne[a][b] = rand();
+		}
+	}
+	
+	// malMatrix(matrixOne);
+	// malMatrix(matrixTwo);
+	// malMatrix(matrixProduct);
+
+	// rNumToMatrix(matrixOne); //only add values to matrix 1 and 2
+	// rNumToMatrix(matrixTwo);
+
+	
 }
+
+// void malMatrix(double **matrix){
+// 	matrix = (double **) malloc(sizeof (double*) *matrixSize); 
+// 	int a;
+// 	for(a = 0; a < matrixSize; a++){
+// 		matrix[a] = (double *) malloc(sizeof (double) *matrixSize);
+// 	}
+// }
+
+
+// void rNumToMatrix(double **matrix){
+// 	srand(time(NULL)); //set seeded matrix time!
+
+// 	int a;
+// 	int b;
+// 	for(a = 0; a < matrixSize; a++){
+// 		for(b = 0; b < matrixSize; b++){
+// 			matrix[a][b] = rand();
+			
+// 		}
+// 	}
+// }
+
 
 /**
  * Reset a given matrix to zeroes
  */
 void mmm_reset(double **matrix)
 {
-	// TODO
+	int a;
+	int b;
+	for (a = 0; a < matrixSize; a++){
+		for(b = 0; b < matrixSize; b++){
+			matrix[a][b] = 0;
+		}
+	}
 }
 
 /**
@@ -27,7 +82,9 @@ void mmm_reset(double **matrix)
  */
 void mmm_freeup()
 {
-	// TODO
+	// TODO use the free command to free up the matricies
+			//ASK how do I get the adress given no inputs
+
 }
 
 /**
@@ -36,6 +93,8 @@ void mmm_freeup()
 void mmm_seq()
 {
 	// TODO - code to perform sequential MMM
+
+	//for each row in both matricies, mulitply and put their products in the new matrix. Run over all rows and calls till done!
 }
 
 /**
@@ -44,6 +103,9 @@ void mmm_seq()
 void *mmm_par(void *args)
 {
 	// TODO - code to perform parallel MMM
+
+	//split up into the correct amount of threads, give out as equal tasks as possible, join and combine into final matrix.
+
 }
 
 /**
@@ -54,6 +116,19 @@ void *mmm_par(void *args)
  */
 double mmm_verify()
 {
-	// TODO
+	//Simply comapre the two matrices. return the largest error.
 	return -1;
 }
+
+
+void printMatrix(double **matrix){
+	int a;
+	int b;
+	for(a = 0; a < matrixSize; a++){
+		for(b = 0; b < matrixSize; b++){
+			printf("%f, ", matrix[a][b]);
+		}
+		printf("\n");
+	}
+}
+
