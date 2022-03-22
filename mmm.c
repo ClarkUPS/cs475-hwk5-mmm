@@ -56,35 +56,29 @@ void mmm_init()
 		P_matrixProduct[a] = (double *) malloc(sizeof (double) *matrixSize);
 	}
 
-		//WON"T WORK!
-	// malMatrix(matrixOne);
-	// malMatrix(matrixTwo);
-	// malMatrix(matrixProduct);
-
-	// rNumToMatrix(matrixOne); //only add values to matrix 1 and 2
-	// rNumToMatrix(matrixTwo);
 }
 
-void malMatrix(double **matrix){
-	matrix = (double **) malloc(sizeof (double*) *matrixSize); 
-	int a;
-	for(a = 0; a < matrixSize; a++){
-		matrix[a] = (double *) malloc(sizeof (double) *matrixSize);
-	}
-}
+	//Genarazation Never
+// void malMatrix(double **matrix){
+// 	matrix = (double **) malloc(sizeof (double*) *matrixSize); 
+// 	int a;
+// 	for(a = 0; a < matrixSize; a++){
+// 		matrix[a] = (double *) malloc(sizeof (double) *matrixSize);
+// 	}
+// }
 
 
-void rNumToMatrix(double **matrix){
-	srand(time(NULL)); //set seeded matrix time!
+// void rNumToMatrix(double **matrix){
+// 	srand(time(NULL)); //set seeded matrix time!
 
-	int a;
-	int b;
-	for(a = 0; a < matrixSize; a++){
-		for(b = 0; b < matrixSize; b++){
-			matrix[a][b] = rand();			
-		}
-	}
-}
+// 	int a;
+// 	int b;
+// 	for(a = 0; a < matrixSize; a++){
+// 		for(b = 0; b < matrixSize; b++){
+// 			matrix[a][b] = rand();			
+// 		}
+// 	}
+// }
 
 
 /**
@@ -106,10 +100,26 @@ void mmm_reset(double **matrix)
  */
 void mmm_freeup()
 {
+	int a;
+	for(a = 0; a < matrixSize; a++){
+		free(matrixOne[a]);
+	}
+	free(matrixOne);
 	
-	// TODO use the free command to free up the matricies
-			//ASK how do I get the adress given no inputs
-
+	for(a = 0; a < matrixSize; a++){
+		free(matrixTwo[a]);
+	}
+	free(matrixTwo);
+	
+	for(a = 0; a < matrixSize; a++){
+		free(S_matrixProduct[a]);
+	}
+	free(S_matrixProduct);
+	
+	for(a = 0; a < matrixSize; a++){
+		free(P_matrixProduct[a]);
+	}
+	free(P_matrixProduct);
 }
 
 /**
@@ -119,9 +129,14 @@ void mmm_seq()
 {
 	int a;
 	int b;
+	int c;
 	for(a = 0; a < matrixSize; a++){
 		for(b = 0; b < matrixSize; b++){
-			S_matrixProduct[a][b] = (matrixOne[a][b] * matrixTwo[a][b]);
+			double product = 0;
+			for(c = 0; c < matrixSize; c++){
+				product += (matrixOne[a][c] * matrixTwo[c][b]);
+			}
+			S_matrixProduct[a][b] = product;
 		}
 	}
 }
@@ -131,21 +146,23 @@ void mmm_seq()
  */
 void *mmm_par(void *args)
 {
-	
 	thread_args *params = (thread_args *)args;
-	printf("\n args tid: %d first row start: %d last row end: %d\n",params->tid, params->firstRow,params->LastRow);
+	
 	// TODO - code to perform parallel MMM
 	int a;
 	int b;
+	int c;
 	for(a = params->firstRow; a < params->LastRow; a++){
 		for(b = 0; b < matrixSize; b++){
-			P_matrixProduct[a][b] = (matrixOne[a][b] * matrixTwo[a][b]);
+			double product = 0;
+			for(c = 0; c < matrixSize; c++){
+				product += (matrixOne[a][c] * matrixTwo[c][b]);
+			}
+			P_matrixProduct[a][b] = product;
 		}
 	}	
 	return NULL;
 }
-
-
 
 
 void parallel(){
@@ -156,27 +173,22 @@ void parallel(){
 	int rowNum = 0; //current row
 
 	
-	printf("Number of threads: %d", threadCount);
-	printf("Rows each needed: %d", rowsEach);
-
-	
 	int i;
 	for(i = 0; i < threadCount; i++){
-		printf("\nROW NUMBER!!!!!: %d\n",rowNum);
 
 		args[i].tid = i; //set the thread number
 		args[i].firstRow = rowNum;
 		
 		rowNum += rowsEach;
 		//Make sure that the last thread takes care of the final rows should the number of rows not be divisable by the number of threads!
+		
 		if(i == threadCount-1){
 			args[i].LastRow = matrixSize;
-			printf("we made it boys");
 		}else{
 			args[i].LastRow = rowNum;
 		}
 		
-		
+		//printf("\nArgs tid: %d first row start: %d last row end: %d\n",args[i].tid, args[i].firstRow,args[i].LastRow);
 		pthread_create(&threads[i], NULL, mmm_par, &args[i]);
 		
 	}
@@ -186,8 +198,6 @@ void parallel(){
 	for(j = 0; j < threadCount; j++){
 		pthread_join(threads[j], NULL);
 	}	
-	printf("\nRows Each! %d",rowsEach);
-
 }
 
 /**

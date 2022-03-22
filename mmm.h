@@ -1,6 +1,7 @@
 #ifndef MMM_H_
 #define MMM_H_
 
+
 extern double **matrixOne;
 extern double **matrixTwo;
 extern double **S_matrixProduct; //for the sequental result
