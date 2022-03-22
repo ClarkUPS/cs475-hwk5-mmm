@@ -71,6 +71,9 @@ int main(int argc, char *argv[])
 	parallel();
 	printf("\nMatrix Product Par\n");
 	printMatrix(P_matrixProduct);
+
+	printf("\n\nThe error difference between Seq and Par was: %f\n",mmm_verify());
+
 	
 	// printf("\nMatrix 1\n");
 	// printMatrix(matrixOne);
