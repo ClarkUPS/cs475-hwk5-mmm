@@ -172,6 +172,11 @@ void parallel(){
 	int rowsEach = matrixSize/threadCount;//number of rows per thread
 	int rowNum = 0; //current row
 
+	//ERROR PRONE
+	// if(rowsEach == 0){
+	// 	rowsEach = 1;
+	// }
+
 	
 	int i;
 	for(i = 0; i < threadCount; i++){
@@ -188,8 +193,10 @@ void parallel(){
 			args[i].LastRow = rowNum;
 		}
 		
-		//printf("\nArgs tid: %d first row start: %d last row end: %d\n",args[i].tid, args[i].firstRow,args[i].LastRow);
-		pthread_create(&threads[i], NULL, mmm_par, &args[i]);
+		// if(!(rowNum > matrixSize)){
+			pthread_create(&threads[i], NULL, mmm_par, &args[i]);
+		//}
+		
 		
 	}
 	
